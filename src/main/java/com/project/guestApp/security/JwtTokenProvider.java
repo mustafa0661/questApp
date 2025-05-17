@@ -31,6 +31,17 @@ public class JwtTokenProvider {
     }
 
     Long getUserIdFromJwt(String token) {
-        Claims claims = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(token).getBody();
+    try {
+        Claims claims = Jwts.parser()
+            .setSigningKey(APP_SECRET)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+        return Long.parseLong(claims.getSubject());
+    } catch (Exception e) {
+        // Log hata
+        // Örneğin: TokenException fırlatabilir veya null dönebilirsiniz
+        return null;
     }
+}
 }

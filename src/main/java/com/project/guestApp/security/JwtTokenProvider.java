@@ -1,23 +1,20 @@
 package com.project.guestApp.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${questapp.app.secret}")
-    private String APP_SECRET;
+    private final Key APP_SECRET = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @Value("${questapp.expires.in}")
     private long EXPIRES_IN;
@@ -25,9 +22,12 @@ public class JwtTokenProvider {
     public String generateJwtToken(Authentication auth) {
         JwtUserDetails userDetails = (JwtUserDetails) auth.getPrincipal();
         Date expireDate = new Date(new Date().getTime() + EXPIRES_IN);
-        return Jwts.builder().setSubject(Long.toString(userDetails.getId()))
-                .setIssuedAt(new Date()).setSubject(Long.toString(userDetails.getId()))
-                .signWith(SignatureAlgorithm.HS512, APP_SECRET).compact();
+        return Jwts.builder()
+                .setSubject(Long.toString(userDetails.getId()))
+                .setIssuedAt(new Date())
+                .setExpiration(expireDate)
+                .signWith(APP_SECRET, SignatureAlgorithm.HS512)
+                .compact();
     }
 
     Long getUserIdFromJwt(String token) {

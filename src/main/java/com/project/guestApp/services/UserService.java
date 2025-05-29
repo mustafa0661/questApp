@@ -2,6 +2,8 @@ package com.project.guestApp.services;
 
 import com.project.guestApp.entities.User;
 import com.project.guestApp.repos.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +13,12 @@ import java.util.Optional;
 public class UserService {
 
     private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAllUsers() {
@@ -21,6 +26,8 @@ public class UserService {
     }
 
     public User saveOneUser(User newUser) {
+        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+        newUser.setPassword(encodedPassword);
         return userRepository.save(newUser);
     }
 
@@ -33,7 +40,8 @@ public class UserService {
         if (user.isPresent()) {
             User foundUser = user.get();
             foundUser.setUserName(newUser.getUserName());
-            foundUser.setPassword(newUser.getPassword());
+            String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+            foundUser.setPassword(encodedPassword);
             userRepository.save(foundUser);
             return foundUser;
         } else return null;

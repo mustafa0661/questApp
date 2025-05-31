@@ -7,9 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,9 +27,16 @@ public class JwtUserDetails implements UserDetails {
     }
 
     public static JwtUserDetails create(User user) {
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority("user"));
-        return new JwtUserDetails(user.getId(), user.getUserName(), user.getPassword(), authorityList);
+        Set<GrantedAuthority> authorities = user.getRoles().stream()
+            .map(role -> new SimpleGrantedAuthority(role.getName()))
+            .collect(java.util.stream.Collectors.toSet());
+
+        return new JwtUserDetails(
+            user.getId(),
+            user.getUserName(),
+            user.getPassword(),
+            authorities
+        );
     }
 
     @Override

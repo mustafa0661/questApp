@@ -36,6 +36,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/users/**").hasAnyRole( "ADMIN", "USER")
+                        .requestMatchers("/roles/**").hasAnyRole( "ADMIN", "USER")
+                        .requestMatchers("/posts/**").hasAnyRole( "ADMIN", "USER")
+                        .requestMatchers("/comments/**").hasAnyRole( "ADMIN", "USER")
+                        .requestMatchers("/likes/**").hasAnyRole( "ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)

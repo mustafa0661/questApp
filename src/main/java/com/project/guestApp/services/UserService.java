@@ -1,5 +1,6 @@
 package com.project.guestApp.services;
 
+import com.project.guestApp.entities.Role;
 import com.project.guestApp.entities.User;
 import com.project.guestApp.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +50,13 @@ public class UserService {
 
     public void deleteOneUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    public User assignRoleToUser(Long userId, Role role) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.getRoles().add(role);
+            return userRepository.save(user);
+        } else return null;
     }
 }

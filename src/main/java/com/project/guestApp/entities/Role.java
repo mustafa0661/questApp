@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @Entity
-@Table(name = "roles")
+@Table(name = "\"roles\"", schema = "quest_app")
 public class Role implements GrantedAuthority {
 
     @Id

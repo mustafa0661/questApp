@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name ="post")
+@Table(name = "\"post\"", schema = "quest_app")
 @Data
 public class Post {
     @Id
